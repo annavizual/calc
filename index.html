@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Стоимость 3D-визуализации — anna.visual3d</title>
+<meta name="description" content="Калькулятор стоимости 3D-визуализации интерьера: по готовому ТЗ, концепция с нуля, полный дизайн-проект.">
+<meta property="og:title" content="Стоимость 3D-визуализации интерьера">
+<meta property="og:description" content="Рассчитайте стоимость проекта и напишите мне в Telegram с готовым расчётом.">
+<meta name="theme-color" content="#cdcbc6">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237a1f2c'/%3E%3Cpath d='M32 50 L12 39 L12 20 L32 31 Z' fill='%23f3f1ed'/%3E%3Cpath d='M32 50 L52 39 L52 20 L32 31 Z' fill='%23cdcbc6'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Мир страницы: тёплый серый фон как у постов, винный акцент заголовков, тёмное дерево, белые «макетные» стены */
+  --bg: #cdcbc6;
+  --paper: #f3f1ed;
+  --paper-2: #e6e3de;
+  --ink: #2b2523;
+  --muted: #6f6762;
+  --wine: #7a1f2c;
+  --wine-soft: #f1e4e4;
+  --wood: #5b4637;
+  --line: rgba(43, 37, 35, .14);
+  --line-strong: rgba(43, 37, 35, .28);
+  --display: "Montserrat Alternates", "Manrope", system-ui, sans-serif;
+  --body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 18px;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding: 40px 24px 64px; display: grid; gap: 40px; }
+
+/* Шапка */
+header { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; }
+.brand { display: flex; align-items: center; gap: 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.brand .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--wine); }
+h1 { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: clamp(30px, 5.2vw, 52px); line-height: 1.08; letter-spacing: -.01em; margin: 14px 0 12px; text-wrap: balance; text-transform: uppercase; }
+.lead { margin: 0; max-width: 54ch; color: var(--muted); font-size: 17px; }
+.iso { width: 200px; height: auto; color: var(--wood); }
+
+/* Основная сетка */
+.main { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.section-title { display: flex; align-items: baseline; gap: 12px; margin: 0 0 16px; font-family: var(--display); font-weight: 600; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; color: var(--ink); }
+.section-title .n { color: var(--wine); font-variant-numeric: tabular-nums; }
+.left { display: grid; gap: 36px; }
+
+/* Карточки услуг */
+.services { display: grid; gap: 12px; }
+.service {
+  position: relative; display: grid; grid-template-columns: 1fr auto; gap: 6px 20px;
+  background: var(--paper); border: 1px solid transparent; border-radius: var(--r);
+  padding: 20px 22px 20px 54px; cursor: pointer; text-align: left; font: inherit; color: inherit;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+}
+.service:hover { border-color: var(--line-strong); }
+.service::before {
+  content: ""; position: absolute; left: 22px; top: 24px; width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--line-strong); background: #fff; transition: border .2s;
+}
+.service[aria-checked="true"] { border-color: var(--wine); background: #fff; box-shadow: 0 10px 30px -18px rgba(122,31,44,.45); }
+.service[aria-checked="true"]::before { border: 5.5px solid var(--wine); }
+.service:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; }
+.service h3 { margin: 0; font-family: var(--display); font-weight: 600; font-size: 18px; line-height: 1.3; }
+.service .price { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: 18px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.service .price small { font-family: var(--body); font-weight: 500; color: var(--muted); font-size: 13px; }
+.service p { grid-column: 1 / -1; margin: 0; color: var(--muted); font-size: 14.5px; max-width: 62ch; }
+.more { grid-column: 1 / -1; justify-self: start; margin-top: 6px; background: none; border: 0; padding: 6px 0; cursor: pointer; font: 600 14px var(--body); color: var(--wine); display: inline-flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(122,31,44,.35); }
+.more:hover { border-bottom-color: var(--wine); }
+.more:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; }
+.more .chev { width: 8px; height: 8px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform .2s; }
+.more[aria-expanded="true"] .chev { transform: translateY(2px) rotate(-135deg); }
+.scope { grid-column: 1 / -1; margin: 8px 0 0; padding: 14px 0 0; border-top: 1px solid var(--line); list-style: none; display: grid; gap: 10px; }
+.scope li { position: relative; padding-left: 20px; font-size: 14.5px; color: var(--ink); max-width: 62ch; }
+.scope li::before { content: ""; position: absolute; left: 2px; top: .72em; width: 8px; height: 1.5px; background: var(--wine); }
+
+/* Площадь */
+.area-box { background: var(--paper); border-radius: var(--r); padding: 22px; display: grid; gap: 14px; }
+.area-row { display: flex; gap: 12px; align-items: stretch; flex-wrap: wrap; }
+.field { position: relative; flex: 1 1 200px; }
+.field input {
+  width: 100%; height: 60px; border-radius: 14px; border: 1px solid var(--line-strong); background: #fff;
+  padding: 0 64px 0 20px; font: 600 24px/1 var(--body); color: var(--ink); font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield; appearance: textfield;
+}
+.field input::-webkit-outer-spin-button, .field input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.field input::placeholder { color: #b3aca7; font-weight: 500; }
+.field input:focus { outline: none; border-color: var(--wine); box-shadow: 0 0 0 3px rgba(122,31,44,.12); }
+.field .unit { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); color: var(--muted); font-weight: 600; pointer-events: none; }
+.hint { font-size: 13.5px; color: var(--muted); margin: 0; }
+.hint.warn { color: var(--wine); font-weight: 600; }
+
+.btn {
+  height: 60px; padding: 0 28px; border-radius: 14px; border: 0; cursor: pointer;
+  font: 600 16px/1 var(--body); letter-spacing: .01em; transition: background .2s, transform .1s, color .2s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; }
+.btn-primary { background: var(--wine); color: #fff; }
+.btn-primary:hover { background: #651826; }
+.btn-ghost { background: transparent; color: var(--wine); border: 1px solid var(--wine); }
+.btn-ghost:hover { background: var(--wine-soft); }
+.btn-calc { flex: 0 0 auto; }
+
+/* Итог */
+.result {
+  position: sticky; top: 24px; background: #fff; border-radius: 24px; padding: 28px;
+  display: grid; gap: 22px; box-shadow: 0 30px 60px -40px rgba(43,37,35,.5);
+}
+.result .eyebrow { font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 0; }
+.total { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: clamp(40px, 6vw, 56px); line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin: 8px 0 0; word-break: break-word; }
+.total.empty { color: #c9c2bd; }
+.rows { display: grid; margin: 0; }
+.rows div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 15px; }
+.rows dt { color: var(--muted); }
+.rows dd { margin: 0; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.split > div { background: var(--paper); border-radius: 14px; padding: 14px 16px; }
+.split .k { font-size: 12.5px; color: var(--muted); }
+.split .v { font-weight: 700; font-size: 19px; font-variant-numeric: tabular-nums; }
+.split > div:first-child { background: var(--wine-soft); }
+.split > div:first-child .v { color: var(--wine); }
+.notice {
+  border: 1px dashed var(--wine); border-radius: 14px; padding: 16px 18px; color: var(--wine);
+  font-weight: 600; background: var(--wine-soft); margin: 0;
+}
+.placeholder { color: var(--muted); font-size: 14.5px; margin: 0; }
+.result .btn { width: 100%; }
+[hidden] { display: none !important; }
+
+/* Как проходит работа */
+.process { background: var(--paper); border-radius: 24px; padding: 32px; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 2fr); gap: 32px; }
+.process h2 { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: 26px; line-height: 1.15; margin: 0 0 10px; text-transform: uppercase; text-wrap: balance; }
+.process .sub { margin: 0; color: var(--muted); font-size: 15px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
+.steps li { border-top: 1px solid var(--line); padding: 18px 0 20px; display: grid; grid-template-columns: 34px 1fr; gap: 4px 10px; }
+.steps .num { font-family: var(--display); color: var(--wine); font-weight: 600; font-size: 14px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+.steps b { display: block; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+.steps span { color: var(--muted); font-size: 14.5px; }
+.pay { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.pay > div { background: #fff; border-radius: 16px; padding: 18px 18px 20px; display: grid; gap: 6px; align-content: start; }
+.pay .pct { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: 24px; line-height: 1.1; }
+.pay b { font-size: 15px; }
+.pay span { color: var(--muted); font-size: 14px; }
+.scope .note { padding-left: 0; color: var(--muted); font-size: 13.5px; margin-top: 4px; }
+.scope .note::before { display: none; }
+.scope .note b { color: var(--ink); font-weight: 600; }
+.addon { background: var(--paper); border-radius: var(--r); padding: 22px; display: grid; gap: 14px; }
+.addon-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.addon-head b { font-size: 16px; }
+.addon-head span { font-size: 13.5px; color: var(--muted); }
+.chips { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+.chip { border: 1px solid var(--line-strong); background: #fff; border-radius: 14px; padding: 12px 10px; cursor: pointer; font: inherit; color: var(--ink); display: grid; gap: 2px; text-align: center; transition: border-color .2s, background .2s; }
+.chip:hover { border-color: var(--wine); }
+.chip:focus-visible { outline: 2px solid var(--wine); outline-offset: 2px; }
+.chip .q { font-weight: 700; font-size: 15px; }
+.chip .c { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chip[aria-checked="true"] { background: var(--wine); border-color: var(--wine); color: #fff; }
+.chip[aria-checked="true"] .c { color: rgba(255,255,255,.8); }
+.included { margin: 0; padding: 14px 16px; border-radius: 14px; background: #fff; font-size: 14.5px; color: var(--ink); }
+.included b { color: var(--wine); }
+.linkish { background: none; border: 0; padding: 0; cursor: pointer; font: 600 14px var(--body); color: var(--wine); justify-self: start; border-bottom: 1px solid rgba(122,31,44,.35); }
+.linkish:focus-visible { outline: 2px solid var(--wine); outline-offset: 3px; }
+.rows .sub-row dt, .rows .sub-row dd { font-size: 14px; }
+.collapse-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; width: 100%; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; color: inherit; text-align: left; }
+.collapse-head:focus-visible { outline: 2px solid var(--wine); outline-offset: 6px; border-radius: 4px; }
+.collapse-head h2 { margin: 0; }
+.plus { flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--wine); position: relative; }
+.plus::before, .plus::after { content: ""; position: absolute; left: 50%; top: 50%; width: 14px; height: 1.5px; background: var(--wine); transform: translate(-50%,-50%); transition: transform .2s; }
+.plus::after { transform: translate(-50%,-50%) rotate(90deg); }
+.collapse-head[aria-expanded="true"] .plus::after { transform: translate(-50%,-50%) rotate(0deg); }
+.photo { background: var(--paper); border-radius: 24px; padding: 28px 32px; display: grid; gap: 20px; scroll-margin-top: 16px; }
+.photo .sub { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+.photo .steps { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.compare { background: var(--paper); border-radius: 24px; padding: 32px; display: grid; gap: 20px; }
+.compare h2 { font-family: var(--display); font-weight: 700; color: var(--wine); font-size: 26px; line-height: 1.15; margin: 0; text-transform: uppercase; }
+.compare .sub { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 16px; background: #fff; }
+table.cmp { width: 100%; min-width: 600px; border-collapse: collapse; font-size: 14.5px; }
+.cmp th, .cmp td { padding: 14px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--line); }
+.cmp thead th { border-top: 0; font-family: var(--display); font-weight: 600; font-size: 14.5px; line-height: 1.3; padding-top: 18px; }
+.cmp thead th .rate { display: block; font-family: var(--body); color: var(--wine); font-weight: 700; font-size: 15px; margin-top: 4px; }
+.cmp tbody th { font-weight: 500; color: var(--muted); width: 26%; }
+.cmp td { font-weight: 600; }
+.cmp td small { display: block; font-weight: 500; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.cmp .hl { color: var(--wine); }
+.cmp .no { color: #b3aca7; font-weight: 500; }
+.cmp .sel { background: var(--wine-soft); }
+.cmp thead .sel { box-shadow: inset 0 3px 0 var(--wine); }
+.cmp .row-key td, .cmp .row-key th { background-clip: padding-box; }
+.cmp .row-key th { color: var(--ink); font-weight: 700; }
+.cmp tbody th, .cmp thead th:first-child { position: sticky; left: 0; background: #fff; z-index: 1; box-shadow: 1px 0 0 var(--line); }
+.swipe { display: none; font-size: 13px; color: var(--muted); margin: 0; }
+textarea.in { height: auto; min-height: 92px; padding: 12px 16px; resize: vertical; line-height: 1.45; }
+.msum { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; background: var(--wine-soft); border-radius: 12px; padding: 12px 16px; font-size: 14px; color: var(--muted); }
+.msum b { font-family: var(--display); color: var(--wine); font-size: 20px; font-variant-numeric: tabular-nums; }
+.demo { font-size: 13px; color: var(--muted); margin: 0; text-align: center; }
+
+footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line-strong); padding-top: 20px; }
+footer a { color: var(--wine); font-weight: 600; text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+
+/* Модальное окно */
+.overlay { position: fixed; inset: 0; background: rgba(43,37,35,.42); display: grid; place-items: center; padding: 20px; z-index: 50; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+.modal { background: #fff; border-radius: 24px; width: min(460px, 100%); max-height: calc(100% - 16px); overflow: auto; padding: 28px; position: relative; display: grid; gap: 18px; animation: rise .25s ease-out; }
+@keyframes rise { from { transform: translateY(12px); opacity: .6; } to { transform: none; opacity: 1; } }
+.modal h2 { font-family: var(--display); color: var(--wine); font-weight: 700; font-size: 22px; margin: 0; text-transform: uppercase; }
+.modal .sub { margin: -8px 0 0; color: var(--muted); font-size: 14.5px; }
+.close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff; cursor: pointer; font-size: 20px; line-height: 1; color: var(--ink); }
+.close:focus-visible { outline: 2px solid var(--wine); outline-offset: 2px; }
+form { display: grid; gap: 14px; }
+label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.in {
+  height: 52px; border-radius: 12px; border: 1px solid var(--line-strong); background: #fff; padding: 0 16px;
+  font: 500 16px var(--body); color: var(--ink); width: 100%;
+}
+select.in { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 22px) 22px, calc(100% - 16px) 22px; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px; }
+.in:focus { outline: none; border-color: var(--wine); box-shadow: 0 0 0 3px rgba(122,31,44,.12); }
+.in.err { border-color: var(--wine); background: var(--wine-soft); }
+.form-err { color: var(--wine); font-size: 13.5px; font-weight: 600; margin: 0; }
+.done { text-align: left; display: grid; gap: 10px; }
+.done p { margin: 0; color: var(--muted); }
+.done a { color: var(--wine); font-weight: 600; }
+
+/* Адаптация */
+@media (max-width: 900px) {
+  .main { grid-template-columns: 1fr; }
+  .result { position: static; }
+  .process { grid-template-columns: 1fr; gap: 16px; }
+  .photo .steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .wrap { padding: 28px 16px 48px; gap: 32px; }
+  header { grid-template-columns: 1fr; }
+  .iso { display: none; }
+  .lead { font-size: 15.5px; }
+  .service { padding: 18px 18px 18px 50px; grid-template-columns: 1fr; }
+  .service::before { left: 18px; top: 21px; }
+  .service .price { font-size: 17px; }
+  .btn-calc { width: 100%; }
+  .result { padding: 22px; border-radius: 20px; }
+  .steps { grid-template-columns: 1fr; }
+  .process { padding: 24px 20px; border-radius: 20px; }
+  .modal { padding: 24px 20px; }
+  .chips { grid-template-columns: 1fr 1fr; }
+  .photo { padding: 24px 20px; border-radius: 20px; }
+  .compare { padding: 24px 20px; border-radius: 20px; }
+  .swipe { display: block; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="brand"><span class="dot"></span>anna.visual3d · 3D-визуализация интерьеров</div>
+      <h1>Калькулятор стоимости проекта</h1>
+      <p class="lead">Выберите формат работы и укажите общую площадь. Расчёт покажет полную стоимость, предоплату и остаток.</p>
+    </div>
+    <svg class="iso" viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" aria-hidden="true">
+      <!-- изометрическая комната-макет -->
+      <path d="M100 136 L18 92 L18 34 L100 78 Z" fill="#f3f1ed"/>
+      <path d="M100 136 L182 92 L182 34 L100 78 Z" fill="#e6e3de"/>
+      <path d="M18 92 L100 136 L182 92" stroke-width="1.6"/>
+      <path d="M100 78 L100 136"/>
+      <path d="M118 120 L118 70 L132 62 L132 112 Z" fill="#7a1f2c" stroke="none" opacity=".85"/>
+      <path d="M144 106 L144 58 L170 44 L170 92 Z" fill="#fff"/>
+      <path d="M157 51 L157 99"/>
+      <path d="M40 92 L40 70 L76 90 L76 112" fill="#5b4637" stroke="none" opacity=".9"/>
+      <path d="M30 60 L58 75 L58 52 L30 37 Z" fill="#fff"/>
+      <circle cx="88" cy="58" r="4" fill="#7a1f2c" stroke="none"/>
+      <path d="M88 44 L88 54"/>
+    </svg>
+  </header>
+
+  <div class="main">
+    <div class="left">
+      <section aria-labelledby="t1">
+        <h2 class="section-title" id="t1"><span class="n">01</span>Формат работы</h2>
+        <div class="services" role="radiogroup" aria-labelledby="t1" id="services"></div>
+      </section>
+
+      <section aria-labelledby="t2">
+        <h2 class="section-title" id="t2"><span class="n">02</span>Площадь проекта</h2>
+        <div class="area-box">
+          <div class="area-row">
+            <div class="field">
+              <input id="area" type="text" inputmode="decimal" autocomplete="off" placeholder="Например, 55" aria-label="Общая площадь проекта в квадратных метрах" aria-describedby="area-hint">
+              <span class="unit">м²</span>
+            </div>
+            <button class="btn btn-primary btn-calc" id="calc" type="button">Рассчитать стоимость</button>
+          </div>
+          <p class="hint" id="area-hint">Общая площадь всех помещений. Минимальный проект — 30 м².</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="t5">
+        <h2 class="section-title" id="t5"><span class="n">03</span>Фотореалистичные ракурсы</h2>
+        <div class="addon">
+          <div id="addon-pick">
+            <div class="addon-head"><b id="addon-title">Сколько ракурсов нужно</b><span id="addon-note">Не входят в тариф, считаются отдельно</span></div>
+            <div class="chips" role="radiogroup" aria-labelledby="addon-title" id="chips" style="margin-top:14px"></div>
+          </div>
+          <p class="included" id="addon-full" hidden>В полный дизайн-проект <b>уже входит 2–3 фотореалистичных ракурса</b> каждого помещения.</p>
+          <button class="linkish" type="button" id="to-photo">Как создаётся фотореализм</button>
+        </div>
+      </section>
+    </div>
+
+    <aside class="result" aria-live="polite" id="result">
+      <div>
+        <p class="eyebrow">Стоимость проекта</p>
+        <p class="total empty" id="total">— ₽</p>
+      </div>
+      <p class="placeholder" id="ph">Выберите формат, укажите площадь и нажмите «Рассчитать стоимость».</p>
+      <p class="notice" id="min" hidden>Минимальная площадь проекта для работы — 30 м²</p>
+      <div id="details" hidden>
+        <dl class="rows">
+          <div><dt>Формат</dt><dd id="r-name"></dd></div>
+          <div><dt>Площадь</dt><dd id="r-area"></dd></div>
+          <div><dt>Стоимость за м²</dt><dd id="r-rate"></dd></div>
+          <div><dt>Работа по площади</dt><dd id="r-work"></dd></div>
+          <div id="r-photo-row"><dt id="r-photo-k">Фотореализм</dt><dd id="r-photo"></dd></div>
+        </dl>
+        <div class="split">
+          <div><div class="k">Предоплата 50% · для старта</div><div class="v" id="r-pre"></div></div>
+          <div><div class="k">Остаток 50% · перед передачей материалов</div><div class="v" id="r-rest"></div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="lead" type="button" hidden>Оставить заявку</button>
+    </aside>
+  </div>
+
+  <section class="compare" aria-labelledby="t7">
+    <div>
+      <h2 id="t7">Сравнение тарифов</h2>
+      <p class="sub">Главное отличие — сколько фотореалистичных ракурсов входит в стоимость.</p>
+    </div>
+    <p class="swipe">Таблицу можно листать вбок →</p>
+    <div class="tbl-wrap">
+      <table class="cmp" id="cmp">
+        <thead>
+          <tr><th scope="col"><span class="sr" style="position:absolute;left:-9999px">Параметр</span></th>
+            <th scope="col" data-col="tz">По готовому ТЗ<span class="rate">500 ₽/м²</span></th>
+            <th scope="col" data-col="concept">Концепция с нуля<span class="rate">800 ₽/м²</span></th>
+            <th scope="col" data-col="full">Полный дизайн-проект<span class="rate">1 500 ₽/м²</span></th></tr>
+        </thead>
+        <tbody>
+          <tr class="row-key"><th scope="row">Фотореалистичные ракурсы в стоимости</th>
+            <td data-col="tz"><span class="no">Не входят</span></td>
+            <td data-col="concept" class="hl">1 ракурс<small>каждого помещения</small></td>
+            <td data-col="full" class="hl">2–3 ракурса<small>каждого помещения</small></td></tr>
+          <tr><th scope="row">Дополнительный фотореализм</th>
+            <td data-col="tz">1 — 800 ₽<br>3 — 2 000 ₽<br>8 — 4 000 ₽</td>
+            <td data-col="concept">По тому же прайсу</td>
+            <td data-col="full"><span class="no">—</span></td></tr>
+          <tr><th scope="row">Обычные ракурсы из 3D-модели</th>
+            <td data-col="tz">5–6<small>каждого помещения</small></td>
+            <td data-col="concept">5–6<small>каждого помещения</small></td>
+            <td data-col="full">5–6<small>каждого помещения</small></td></tr>
+          <tr><th scope="row">Видеооблёт готовых помещений</th>
+            <td data-col="tz">Входит</td><td data-col="concept">Входит</td><td data-col="full">Входит</td></tr>
+          <tr><th scope="row">Круги правок</th>
+            <td data-col="tz">2 на каждом этапе</td><td data-col="concept">2 на каждом этапе</td><td data-col="full">2 на каждом этапе</td></tr>
+          <tr><th scope="row">Концепция интерьера</th>
+            <td data-col="tz"><span class="no">Ваша, готовая</span></td><td data-col="concept">С нуля</td><td data-col="full">С нуля</td></tr>
+          <tr><th scope="row">Подбор товаров со ссылками на магазины</th>
+            <td data-col="tz"><span class="no">—</span></td><td data-col="concept"><span class="no">—</span></td><td data-col="full">Входит</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="process" aria-labelledby="t3">
+    <div>
+      <h2 id="t3">Как проходит работа</h2>
+      <p class="sub">Интерьер собирается постепенно, и вы видите его на каждом шаге.</p>
+    </div>
+    <ol class="steps">
+      <li><span class="num">01</span><div><b>Поэтапно, с согласованием</b><span>В процессе присылаю промежуточные скриншоты, мы обсуждаем результат и постепенно вносим нужные изменения.</span></div></li>
+      <li><span class="num">02</span><div><b>2 круга правок на каждом этапе</b><span>Можно спокойно уточнить детали, прежде чем двигаться дальше.</span></div></li>
+      <li><span class="num">03</span><div><b>Согласованное фиксируем</b><span>После утверждения этапа переходим к следующему и к принятым решениям не возвращаемся.</span></div></li>
+      <li><span class="num">04</span><div><b>До 5 рабочих дней на помещение</b><span>Это максимальный срок при большой загрузке. Работа может быть готова быстрее.</span></div></li>
+    </ol>
+  </section>
+
+  <section class="photo" id="photo" aria-labelledby="t6">
+    <button class="collapse-head" type="button" id="photo-toggle" aria-expanded="false" aria-controls="photo-body">
+      <div><h2 id="t6" style="font-family:var(--display);font-weight:700;color:var(--wine);font-size:26px;line-height:1.15;text-transform:uppercase">Как создаётся фотореализм</h2>
+      <p class="sub">Только после полного согласования 3D-модели</p></div>
+      <span class="plus" aria-hidden="true"></span>
+    </button>
+    <div id="photo-body" hidden>
+      <ol class="steps">
+        <li><span class="num">01</span><div><b>Согласуем интерьер полностью</b><span>Мебель, материалы, цвета, декор и остальные детали утверждаются в 3D-модели.</span></div></li>
+        <li><span class="num">02</span><div><b>Выбираем финальные ракурсы</b><span>После согласования модели вы выбираете, какие из финальных ракурсов перевести в фотореалистичный вид.</span></div></li>
+        <li><span class="num">03</span><div><b>Создаю фотореализм</b><span>Изображения создаются с помощью искусственного интеллекта на основе согласованной 3D-модели и выбранного ракурса.</span></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="process" aria-labelledby="t4">
+    <div>
+      <h2 id="t4">Оплата и условия</h2>
+      <p class="sub">Одинаковые для всех форматов работы.</p>
+    </div>
+    <div class="pay">
+      <div><span class="pct">50%</span><b>Предоплата</b><span>Вносится для начала работы.</span></div>
+      <div><span class="pct">50%</span><b>Остаток</b><span>После полного согласования проекта, перед передачей финальных материалов.</span></div>
+      <div><span class="pct">Я.Диск</span><b>Передача материалов</b><span>После полной оплаты готовые материалы приходят ссылкой на Яндекс.Диск.</span></div>
+      <div><span class="pct">от 30 м²</span><b>Минимальный проект</b><span>Проекты меньшей площади в работу не беру.</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>anna.visual3d · SketchUp + AI</span>
+    <span>Для дизайнеров и собственников недвижимости</span>
+  </footer>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+    <button class="close" id="close" type="button" aria-label="Закрыть">×</button>
+    <div>
+      <h2 id="m-title">Заявка на проект</h2>
+      <p class="sub" style="margin:6px 0 18px">Заполните данные, и расчёт подставится в сообщение мне в Telegram.</p>
+      <form id="form" novalidate>
+        <label for="f-name">Имя<input class="in" id="f-name" name="name" autocomplete="name" placeholder="Как к вам обращаться"></label>
+        <label for="f-area">Площадь проекта, м²<input class="in" id="f-area" name="area" inputmode="decimal"></label>
+        <label for="f-service">Формат работы<select class="in" id="f-service" name="service"></select></label>
+        <label for="f-comment">Комментарий (необязательно)<textarea class="in" id="f-comment" name="comment" rows="3" placeholder="Тип помещения, сроки, что уже есть: план, референсы"></textarea></label>
+        <div class="msum" id="f-sum"></div>
+        <p class="form-err" id="f-err" hidden></p>
+        <a class="btn btn-primary" id="tg" href="#" target="_blank" rel="noopener" style="width:100%;margin-top:4px;text-decoration:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.4 4.1 2.9 11.2c-1.3.5-1.2 1.2-.2 1.5l4.7 1.5 1.8 5.6c.2.6.1.9.8.9.5 0 .7-.2 1-.5l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.7-.8l3.1-14.7c.3-1.3-.5-1.9-1.5-1.4ZM9.3 14.1l9.1-5.7c.4-.3.8-.1.5.2l-7.8 7-.3 3.3-1.5-4.8Z"/></svg>
+          Написать мне в Telegram</a>
+        <p class="demo">Откроется Telegram с готовым расчётом</p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+const SERVICES = [
+  { id: "tz", name: "Визуализация по готовому ТЗ", short: "По готовому ТЗ", rate: 500, photo: "extra",
+    text: "У вас уже есть концепция. Я переношу её в 3D и при необходимости добавляю декор и детали.",
+    scope: [
+      "Вы предоставляете планировку и расстановку мебели, референсы, пожелания по материалам, цветам и основным элементам интерьера",
+      "Я переношу эту идею в 3D",
+      "При необходимости добавляю декор и детали для более цельного результата",
+      "5–6 обычных ракурсов каждого помещения из 3D-модели",
+      "Видеооблёт готовых помещений"
+    ],
+    note: "<b>Фотореализм не входит</b> и считается отдельно: 1 ракурс — 800 ₽, 3 ракурса — 2 000 ₽, 8 ракурсов — 4 000 ₽." },
+  { id: "concept", name: "Концепция интерьера с нуля", short: "Концепция с нуля", rate: 800, photo: "plus",
+    text: "Разрабатываю концепцию по вашей планировке, пожеланиям и референсам. Входит 1 фотореалистичный ракурс каждого помещения.",
+    scope: [
+      "Цветовые и стилистические решения",
+      "Подбор материалов, мебели, освещения и декора",
+      "Оформление пространства",
+      "5–6 обычных ракурсов каждого помещения из 3D-модели",
+      "Видеооблёт готовых помещений",
+      "1 фотореалистичный ракурс каждого помещения"
+    ],
+    note: "<b>Дополнительные ракурсы</b> можно заказать отдельно по прайсу: 1 — 800 ₽, 3 — 2 000 ₽, 8 — 4 000 ₽." },
+  { id: "full", name: "Полный дизайн-проект", short: "Полный дизайн-проект", rate: 1500, photo: "included",
+    text: "Концепция, подбор конкретных товаров со ссылками на магазины, 3D-визуализация. Входит 2–3 фотореалистичных ракурса каждого помещения.",
+    scope: [
+      "Разработка концепции с нуля",
+      "Планировка и расстановка мебели",
+      "Подбор цветовой гаммы и материалов",
+      "Подбор мебели, освещения, сантехники, декора и других элементов",
+      "Подбор конкретных товаров для реализации со ссылками на магазины",
+      "3D-визуализация интерьера",
+      "5–6 обычных ракурсов каждого помещения из 3D-модели",
+      "Видеооблёт готовых помещений",
+      "2–3 фотореалистичных ракурса каждого помещения"
+    ],
+    note: "<b>Технические чертежи не входят.</b> При необходимости за отдельную стоимость подготовлю развёртки мебели, которая изготавливается на заказ." }
+];
+const PHOTO = [
+  { n: 0, price: 0 },
+  { n: 1, price: 800 },
+  { n: 3, price: 2000 },
+  { n: 8, price: 4000 }
+];
+const angles = n => n === 1 ? "ракурс" : (n >= 2 && n <= 4 ? "ракурса" : "ракурсов");
+const MIN_AREA = 30;
+
+const fmt = n => Math.round(n).toLocaleString("ru-RU").replace(/ | /g, " ") + " ₽";
+const fmtArea = a => (Math.round(a * 10) / 10).toLocaleString("ru-RU") + " м²";
+function parseArea(v) {
+  const s = String(v).replace(/\s/g, "").replace(",", ".");
+  if (!/^\d*\.?\d+$|^\d+\.?$/.test(s)) return NaN;
+  return parseFloat(s);
+}
+function compute(area, rate, photo = 0) {
+  if (!(area >= MIN_AREA)) return null;
+  const work = Math.round(area * rate);
+  const total = work + photo;
+  const pre = Math.round(total / 2);
+  return { work, photo, total, pre, rest: total - pre };
+}
+
+let selected = "concept";
+let photoN = 0;
+let calculated = false;
+const $ = id => document.getElementById(id);
+
+// карточки
+const box = $("services");
+SERVICES.forEach(s => {
+  const b = document.createElement("div");
+  b.className = "service"; b.id = "svc-" + s.id;
+  b.setAttribute("role", "radio"); b.dataset.id = s.id;
+  b.innerHTML = `<h3>${s.name}</h3><div class="price">${s.rate.toLocaleString("ru-RU")} ₽<small>/м²</small></div><p>${s.text}</p>` +
+    `<button type="button" class="more" aria-expanded="false" aria-controls="scope-${s.id}"><span class="lbl">Подробнее</span><span class="chev"></span></button><ul class="scope" id="scope-${s.id}" hidden>${s.scope.map(x => `<li>${x}</li>`).join("")}<li class="note">${s.note}</li></ul>`;
+  b.addEventListener("click", () => select(s.id));
+  const more = b.querySelector(".more");
+  more.addEventListener("click", e => {
+    e.stopPropagation();
+    const open = more.getAttribute("aria-expanded") !== "true";
+    more.setAttribute("aria-expanded", open);
+    more.querySelector(".lbl").textContent = open ? "Свернуть" : "Подробнее";
+    b.querySelector(".scope").hidden = !open;
+    select(s.id);
+  });
+  b.addEventListener("keydown", e => {
+    if (e.target !== b) return;
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); select(s.id); return; }
+    const i = SERVICES.findIndex(x => x.id === s.id);
+    if (["ArrowDown","ArrowRight"].includes(e.key)) { e.preventDefault(); select(SERVICES[(i+1)%3].id, true); }
+    if (["ArrowUp","ArrowLeft"].includes(e.key)) { e.preventDefault(); select(SERVICES[(i+2)%3].id, true); }
+  });
+  box.appendChild(b);
+  const o = document.createElement("option"); o.value = s.id; o.textContent = `${s.name} — ${s.rate} ₽/м²`;
+  $("f-service").appendChild(o);
+});
+const chipBox = $("chips");
+PHOTO.forEach(o => {
+  const c = document.createElement("button");
+  c.type = "button"; c.className = "chip"; c.setAttribute("role", "radio"); c.dataset.n = o.n;
+  c.innerHTML = o.n ? `<span class="q">${o.n} ${angles(o.n)}</span><span class="c">+ ${fmt(o.price)}</span>` : `<span class="q">Не нужно</span><span class="c">0 ₽</span>`;
+  c.addEventListener("click", () => { photoN = o.n; syncChips(); if (calculated) render(); });
+  chipBox.appendChild(c);
+});
+function syncChips() {
+  chipBox.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-checked", +c.dataset.n === photoN));
+}
+function photoPrice(svcId) {
+  const svc = SERVICES.find(s => s.id === svcId);
+  if (svc.photo === "included") return { n: 0, price: 0 };
+  return PHOTO.find(o => o.n === photoN);
+}
+function syncAddon() {
+  const svc = SERVICES.find(s => s.id === selected);
+  const full = svc.photo === "included";
+  $("addon-pick").hidden = full; $("addon-full").hidden = !full;
+  $("addon-title").textContent = svc.photo === "plus" ? "Дополнительные ракурсы" : "Сколько ракурсов нужно";
+  $("addon-note").textContent = svc.photo === "plus" ? "1 ракурс каждого помещения уже входит" : "Не входят в тариф, считаются отдельно";
+  chipBox.querySelector('[data-n="0"] .q').textContent = svc.photo === "plus" ? "Без доп." : "Не нужно";
+}
+syncChips();
+
+function select(id, focus) {
+  selected = id;
+  document.querySelectorAll(".service").forEach(el => {
+    const on = el.dataset.id === id;
+    el.setAttribute("aria-checked", on); el.tabIndex = on ? 0 : -1;
+    if (on && focus) el.focus();
+  });
+  syncAddon();
+  document.querySelectorAll("#cmp [data-col]").forEach(c => c.classList.toggle("sel", c.dataset.col === id));
+  if (calculated) render();
+}
+select(selected);
+
+function render() {
+  const raw = $("area").value.trim();
+  const area = parseArea(raw);
+  const svc = SERVICES.find(s => s.id === selected);
+  const hint = $("area-hint");
+  const show = (ph, min, det) => { $("ph").hidden = !ph; $("min").hidden = !min; $("details").hidden = !det; $("lead").hidden = !det; };
+
+  if (!raw || isNaN(area) || area <= 0) {
+    $("total").textContent = "— ₽"; $("total").classList.add("empty");
+    $("ph").textContent = raw ? "Введите площадь числом, например 55 или 62,5." : "Укажите площадь проекта, чтобы увидеть расчёт.";
+    hint.classList.toggle("warn", !!raw);
+    show(true, false, false); return;
+  }
+  hint.classList.remove("warn");
+  const ph = photoPrice(svc.id);
+  const r = compute(area, svc.rate, ph.price);
+  if (!r) {
+    $("total").textContent = "— ₽"; $("total").classList.add("empty");
+    show(false, true, false); return;
+  }
+  $("total").textContent = fmt(r.total); $("total").classList.remove("empty");
+  $("r-name").textContent = svc.short;
+  $("r-area").textContent = fmtArea(area);
+  $("r-rate").textContent = fmt(svc.rate) + "/м²";
+  $("r-work").textContent = fmt(r.work);
+  if (svc.photo === "included") {
+    $("r-photo-row").hidden = false; $("r-photo-k").textContent = "Фотореализм"; $("r-photo").textContent = "2–3 ракурса на помещение";
+  } else if (svc.photo === "plus" && !ph.n) {
+    $("r-photo-row").hidden = false; $("r-photo-k").textContent = "Фотореализм"; $("r-photo").textContent = "1 ракурс на помещение";
+  } else if (ph.n) {
+    $("r-photo-row").hidden = false;
+    $("r-photo-k").textContent = (svc.photo === "plus" ? "Доп. фотореализм, " : "Фотореализм, ") + ph.n + " " + angles(ph.n);
+    $("r-photo").textContent = "+ " + fmt(ph.price);
+  } else { $("r-photo-row").hidden = true; }
+  $("r-pre").textContent = fmt(r.pre);
+  $("r-rest").textContent = fmt(r.rest);
+  show(false, false, true);
+}
+
+$("calc").addEventListener("click", () => {
+  calculated = true; render();
+  if (window.matchMedia("(max-width: 900px)").matches) $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+$("area").addEventListener("input", () => { if (calculated) render(); });
+$("area").addEventListener("keydown", e => { if (e.key === "Enter") $("calc").click(); });
+
+function setPhoto(open) {
+  $("photo-toggle").setAttribute("aria-expanded", open);
+  $("photo-body").hidden = !open;
+}
+$("photo-toggle").addEventListener("click", () => setPhoto($("photo-toggle").getAttribute("aria-expanded") !== "true"));
+$("to-photo").addEventListener("click", () => { setPhoto(true); $("photo").scrollIntoView({ behavior: "smooth", block: "start" }); });
+
+// модальное окно
+let lastFocus = null;
+function openModal() {
+  lastFocus = document.activeElement;
+  $("f-area").value = $("area").value.trim();
+  $("f-service").value = selected;
+  $("f-err").hidden = true;
+  document.querySelectorAll(".in").forEach(i => i.classList.remove("err"));
+  updateTg();
+  $("overlay").hidden = false; document.body.style.overflow = "hidden";
+  setTimeout(() => $("f-name").focus(), 50);
+}
+function closeModal() {
+  $("overlay").hidden = true; document.body.style.overflow = "";
+  if (lastFocus) lastFocus.focus();
+}
+$("lead").addEventListener("click", openModal);
+$("close").addEventListener("click", closeModal);
+$("overlay").addEventListener("click", e => { if (e.target === $("overlay")) closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("overlay").hidden) closeModal(); });
+
+const TG_USERNAME = "annavizual3d";
+function buildMessage() {
+  const name = $("f-name").value.trim();
+  const a = parseArea($("f-area").value);
+  const svc = SERVICES.find(x => x.id === $("f-service").value);
+  const ph = photoPrice(svc.id);
+  const r = compute(a, svc.rate, ph.price);
+  const comment = $("f-comment").value.trim();
+  if (!r) return { r: null };
+  const lines = [
+    `Здравствуйте! Меня зовут ${name || "…"}.`,
+    "",
+    `Площадь: ${fmtArea(a)}`,
+    `Тариф: ${svc.name} (${svc.rate.toLocaleString("ru-RU")} ₽/м²)`,
+    `Стоимость проекта: ${fmt(r.work)}`
+  ];
+  if (ph.n) lines.push(`Фотореалистичные ракурсы: ${ph.n} ${angles(ph.n)} — ${fmt(ph.price)}`);
+  lines.push(`Итоговая стоимость: ${fmt(r.total)}`);
+  if (comment) lines.push("", `Комментарий: ${comment}`);
+  lines.push("", "Хочу обсудить проект и уточнить возможность начала работы.");
+  return { r, ph, text: lines.join("\n").replace(/\u00a0/g, " ") };
+}
+function updateTg() {
+  const m = buildMessage();
+  $("f-sum").innerHTML = m.r
+    ? `<span>Итого${m.ph.n ? `, с ракурсами` : ""}</span><b>${fmt(m.r.total)}</b>`
+    : `<span>Укажите площадь от 30 м²</span><b>— ₽</b>`;
+  $("tg").href = m.r ? `https://t.me/${TG_USERNAME}?text=${encodeURIComponent(m.text)}` : "#";
+}
+["f-name","f-area","f-service","f-comment"].forEach(id => $(id).addEventListener("input", () => { $(id).classList.remove("err"); if (!document.querySelector("#form .err")) $("f-err").hidden = true; updateTg(); }));
+$("f-service").addEventListener("change", updateTg);
+$("tg").addEventListener("click", e => {
+  const name = $("f-name"), area = $("f-area");
+  const errs = [];
+  [name, area].forEach(i => i.classList.remove("err"));
+  if (!name.value.trim()) { errs.push("имя"); name.classList.add("err"); }
+  const a = parseArea(area.value);
+  if (isNaN(a) || a < MIN_AREA) { errs.push("площадь от 30 м²"); area.classList.add("err"); }
+  if (errs.length) { e.preventDefault(); $("f-err").textContent = "Заполните: " + errs.join(", ") + "."; $("f-err").hidden = false; return; }
+  $("f-err").hidden = true;
+  updateTg();
+});
+$("form").addEventListener("submit", e => e.preventDefault());
+
+</script>
+</body>
+</html>
